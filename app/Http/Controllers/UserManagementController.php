@@ -16,7 +16,7 @@ class UserManagementController extends Controller
 
     public function create()
     {
-        return view('settings.users.create');
+        return view('settings.user-create');
     }
 
     public function store(Request $request)
@@ -28,20 +28,21 @@ class UserManagementController extends Controller
             'role' => 'required|in:admin,teacher,student,accountant'
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role']
         ]);
 
-        return redirect()->route('user-management.index')
+        // FIXED: Use the correct route name
+        return redirect()->route('settings.user-management.index')
                         ->with('success', 'User created successfully.');
     }
 
     public function edit(User $user)
     {
-        return view('settings.users.edit', compact('user'));
+        return view('settings.user-edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
@@ -54,14 +55,17 @@ class UserManagementController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route('user-management.index')
+        // FIXED: Use the correct route name
+        return redirect()->route('settings.user-management.index')
                         ->with('success', 'User updated successfully.');
     }
 
     public function destroy(User $user)
     {
         $user->delete();
-        return redirect()->route('user-management.index')
+        
+        // FIXED: Use the correct route name
+        return redirect()->route('settings.user-management.index')
                         ->with('success', 'User deleted successfully.');
     }
 }

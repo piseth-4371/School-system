@@ -19,8 +19,8 @@ class StudentController extends Controller
     {
         $students = Student::with(['user', 'department'])
             ->latest()
-            ->get();
-            
+            ->paginate(20); // or ->get() if not using pagination
+
         return view('students.index', compact('students'));
     }
 

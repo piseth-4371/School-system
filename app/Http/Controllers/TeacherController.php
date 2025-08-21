@@ -32,36 +32,59 @@ class TeacherController extends Controller
             'password' => 'required|min:8|confirmed',
             'teacher_code' => 'required|unique:teachers,teacher_code',
             'gender' => 'required|in:male,female,other',
-            'qualification' => 'required|string',
-            'specialization' => 'required|string',
+            'qualification' => 'required|string|max:255',
+            'specialization' => 'required|string|max:255',
             'joined_date' => 'required|date',
             'department_id' => 'required|exists:departments,id'
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'teacher'
-        ]);
+        DB::beginTransaction();
 
-        Teacher::create([
-            'user_id' => $user->id,
-            'teacher_code' => $validated['teacher_code'],
-            'gender' => $validated['gender'],
-            'qualification' => $validated['qualification'],
-            'specialization' => $validated['specialization'],
-            'joined_date' => $validated['joined_date'],
-            'department_id' => $validated['department_id']
-        ]);
+        try {
+            // Create User first
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'role' => 'teacher'
+            ]);
 
-        return redirect()->route('teachers.index')->with('success', 'Teacher created successfully.');
+            // Create Teacher profile
+            Teacher::create([
+                'user_id' => $user->id,
+                'teacher_code' => $validated['teacher_code'],
+                'gender' => $validated['gender'],
+                'qualification' => $validated['qualification'],
+                'specialization' => $validated['specialization'],
+                'joined_date' => $validated['joined_date'],
+                'department_id' => $validated['department_id']
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('teachers.index')
+                            ->with('success', 'Teacher created successfully.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            return back()->withInput()
+                        ->with('error', 'Failed to create teacher: ' . $e->getMessage());
+        }
     }
 
     public function show(Teacher $teacher)
     {
-        // $teacher->load(['user', 'department', 'classes', 'students']);
-        $teacher->load(['classes']);
+        $teacher->load([
+            'user', 
+            'department', 
+            'classes.department',
+            'exams.subject',
+            'timetables.day',
+            'timetables.subject',
+            'timetables.classYear.class'
+        ]);
+
         return view('teachers.show', compact('teacher'));
     }
 

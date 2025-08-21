@@ -54,9 +54,9 @@
                     <tbody>
                         @forelse($attendances as $attendance)
                         <tr>
-                            <td>{{ $attendance->student->student_code ?? 'N/A' }}</td>
-                            <td>{{ $attendance->student->user->name ?? 'N/A' }}</td>
-                            <td>{{ $attendance->student->user->email ?? 'N/A' }}</td>
+                            <td>{{ $attendance->teacher->teacher_code ?? 'N/A' }}</td>
+                            <td>{{ $attendance->teacher->user->name ?? 'N/A' }}</td>
+                            <td>{{ $attendance->teacher->user->email ?? 'N/A' }}</td>
                             <td>{{ \Illuminate\Support\Carbon::parse($attendance->date)->format('d M, Y') }}</td>
                             <td>
                                 @php

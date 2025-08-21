@@ -208,4 +208,19 @@ class PaymentController extends Controller
 
         return view('payments.by-student', compact('payments', 'student'));
     }
+    
+    public function financialSummary(Request $request)
+    {
+        // Your existing code to get payments data
+        $payments = Payment::whereBetween('payment_date', [$startDate, $endDate])->get();
+        
+        return view('reports.financial-summary', compact(
+            'payments', 
+            'summary', 
+            'monthlyData', 
+            'paymentMethods', 
+            'startDate', 
+            'endDate'
+        ));
+    }
 }

@@ -6,9 +6,9 @@
     <div class="row mb-4">
         <div class="col-12 d-flex justify-content-between align-items-center">
             <h1 class="h3 mb-0">Add Attendance</h1>
-            <a href="{{ route('attendances.index') }}" class="btn btn-outline-secondary">
+            <!-- <a href="{{ route('attendances.index') }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Back
-            </a>
+            </a> -->
         </div>
     </div>
 

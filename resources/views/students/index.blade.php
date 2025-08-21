@@ -31,7 +31,8 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Department</th>
-                            <th>Class</th>
+                            <th>Gender</th>
+                            <th>Phone</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -43,38 +44,50 @@
                             <td>{{ $student->user->name ?? 'N/A' }}</td>
                             <td>{{ $student->user->email ?? 'N/A' }}</td>
                             <td>{{ $student->department->name ?? 'N/A' }}</td>
-                            <td>
-                                {{ $student->classYear->class->name ?? 'N/A' }} - 
-                                {{ $student->classYear->academicYear->name ?? 'N/A' }}
-                            </td>
+                            <td>{{ ucfirst($student->gender) }}</td>
+                            <td>{{ $student->phone ?? 'N/A' }}</td>
                             <td>
                                 <span class="badge bg-success">Active</span>
                             </td>
                             <td>
-                                <a href="{{ route('students.show', $student) }}" class="btn btn-info btn-sm">
-                                    <i class="bi bi-eye"></i> View
-                                </a>
-                                <a href="{{ route('students.edit', $student) }}" class="btn btn-warning btn-sm">
-                                    <i class="bi bi-pencil"></i> Edit
-                                </a>
-                                <form action="{{ route('students.destroy', $student) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" 
-                                            onclick="return confirm('Are you sure you want to delete this student?')">
-                                        <i class="bi bi-trash"></i> Delete
-                                    </button>
-                                </form>
+                                <div class="btn-group" role="group">
+                                    <a href="{{ route('students.show', $student) }}" class="btn btn-info btn-sm">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ route('students.edit', $student) }}" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form action="{{ route('students.destroy', $student) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm" 
+                                                onclick="return confirm('Are you sure you want to delete this student?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center">No students found.</td>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="bi bi-people display-4 d-block mb-2"></i>
+                                    No students found.
+                                </div>
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
+            {{-- Add pagination if needed --}}
+            @if($students->hasPages())
+            <div class="d-flex justify-content-center mt-3">
+                {{ $students->links() }}
+            </div>
+            @endif
         </div>
     </div>
 </div>

@@ -33,7 +33,7 @@
                 <div class="card">
                     <div class="card-body text-center">
                         <div class="mb-3">
-                            @if($user->profile_photo)
+                            @if(isset($user->profile_photo) && $user->profile_photo)
                                 <img src="{{ asset('storage/profile-photos/' . $user->profile_photo) }}" 
                                      class="rounded-circle mb-3" width="150" height="150" style="object-fit: cover;">
                                 <br>
@@ -91,14 +91,14 @@
                                 <div class="mb-3">
                                     <label for="phone" class="form-label">Phone Number</label>
                                     <input type="tel" class="form-control" id="phone" name="phone" 
-                                           value="{{ old('phone', $profileData->phone ?? '') }}">
+                                           value="{{ old('phone', isset($profileData->phone) ? $profileData->phone : '') }}">
                                 </div>
                             </div>
                             @if($user->role === 'student')
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="address" class="form-label">Address</label>
-                                    <textarea class="form-control" id="address" name="address" rows="2">{{ old('address', $profileData->address ?? '') }}</textarea>
+                                    <textarea class="form-control" id="address" name="address" rows="2">{{ old('address', isset($profileData->address) ? $profileData->address : '') }}</textarea>
                                 </div>
                             </div>
                             @endif
@@ -156,7 +156,7 @@
 @push('scripts')
 <script>
     // Preview profile photo before upload
-    document.getElementById('profile_photo').addEventListener('change', function(e) {
+    document.getElementById('profile_photo')?.addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();

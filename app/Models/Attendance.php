@@ -9,7 +9,8 @@ class Attendance extends Model
     protected $fillable = [
         'date', 
         'status', 
-        'teacher_id'
+        'teacher_id',
+        'class_year_id'
     ];
 
     protected $casts = [
@@ -34,5 +35,9 @@ class Attendance extends Model
     public function getTotalAbsentAttribute()
     {
         return $this->details->where('status', 'absent')->count();
+    }
+    public function classYear()
+    {
+        return $this->belongsTo(ClassYear::class);
     }
 }

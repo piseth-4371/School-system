@@ -25,13 +25,15 @@
                 @method('PUT')
 
                 <div class="col-md-6">
-                    <label class="form-label">Student</label>
-                    <input type="text" class="form-control" value="{{ $attendance->student->student_code }} — {{ $attendance->student->user->name ?? 'N/A' }}" disabled>
+                    <label class="form-label">Teacher</label>
+                    <input type="text" class="form-control" 
+                           value="{{ $attendance->teacher->teacher_code }} — {{ $attendance->teacher->user->name ?? 'N/A' }}" 
+                           disabled>
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label">Date</label>
-                    <input type="date" name="date" value="{{ old('date', $attendance->date) }}"
+                    <input type="date" name="date" value="{{ old('date', $attendance->date->format('Y-m-d')) }}"
                            class="form-control @error('date') is-invalid @enderror">
                     @error('date') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>

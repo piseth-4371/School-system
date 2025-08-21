@@ -19,7 +19,8 @@ class Student extends Model
         'parent_name',
         'parent_phone',
         'enrolled_date',
-        'department_id'
+        'department_id',
+        'class_year_id' 
     ];
 
     protected $casts = [
@@ -60,5 +61,9 @@ class Student extends Model
     public function getTotalPaidAttribute()
     {
         return $this->payments->sum('paid_amount');
+    }
+    public function classYear()
+    {
+        return $this->belongsTo(ClassYear::class);
     }
 }

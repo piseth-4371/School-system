@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\Department;
 use App\Models\SchoolClass;
 use App\Models\ClassYear;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -13,11 +14,16 @@ class SettingController extends Controller
 {
     public function index()
     {
-        $academicYears = AcademicYear::orderBy('start_date', 'desc')->get();
-        $departments = Department::where('is_active', true)->get();
-        $classes = SchoolClass::with('department')->where('is_active', true)->get();
-        
-        return view('settings.index', compact('academicYears', 'departments', 'classes'));
+        // Get statistics for the dashboard
+        $stats = [
+            'currentYear' => AcademicYear::where('is_current', true)->first(),
+            'activeClasses' => SchoolClass::where('is_active', true)->count(),
+            'activeDepartments' => Department::where('is_active', true)->count(),
+            'classYears' => ClassYear::count(),
+            'totalUsers' => User::count()
+        ];
+
+        return view('settings.index', compact('stats'));
     }
 
     public function academicYears()
@@ -33,11 +39,11 @@ class SettingController extends Controller
             'code' => 'required|string|max:10|unique:academic_years,code',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'is_current' => 'boolean'
+            'is_current' => 'sometimes|boolean'
         ]);
 
         // If this is set as current, remove current flag from others
-        if ($request->is_current) {
+        if ($request->has('is_current') && $request->is_current) {
             AcademicYear::where('is_current', true)->update(['is_current' => false]);
         }
 
@@ -54,11 +60,11 @@ class SettingController extends Controller
             'code' => 'required|string|max:10|unique:academic_years,code,' . $academicYear->id,
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'is_current' => 'boolean'
+            'is_current' => 'sometimes|boolean'
         ]);
 
         // If this is set as current, remove current flag from others
-        if ($request->is_current) {
+        if ($request->has('is_current') && $request->is_current) {
             AcademicYear::where('is_current', true)->where('id', '!=', $academicYear->id)->update(['is_current' => false]);
         }
 
@@ -80,7 +86,7 @@ class SettingController extends Controller
     public function systemConfig()
     {
         $config = [
-            'school_name' => config('app.name', 'University School Management System'),
+            'school_name' => config('school.name', 'University School Management System'),
             'school_address' => config('school.address', ''),
             'school_phone' => config('school.phone', ''),
             'school_email' => config('school.email', ''),
@@ -102,12 +108,13 @@ class SettingController extends Controller
             'date_format' => 'required|string|in:Y-m-d,d-m-Y,m-d-Y,Y/m/d,d/m/Y,m/d/Y',
         ]);
 
-        // Update config values (you might want to store these in database or config file)
+        // In a real application, you would store these in a database table
+        // For now, we'll just store them in the session for demonstration
         foreach ($validated as $key => $value) {
-            config(["school.{$key}" => $value]);
+            session(['school_' . $key => $value]);
         }
 
-        // Clear config cache
+        // Clear config cache if you're using config files
         Cache::forget('school_settings');
 
         return redirect()->route('settings.system-config')
@@ -118,9 +125,8 @@ class SettingController extends Controller
     {
         $classes = SchoolClass::with('department')->get();
         $departments = Department::where('is_active', true)->get();
-        $academicYears = AcademicYear::where('is_active', true)->get();
 
-        return view('settings.class-management', compact('classes', 'departments', 'academicYears'));
+        return view('settings.class-management', compact('classes', 'departments'));
     }
 
     public function storeClass(Request $request)
@@ -130,8 +136,11 @@ class SettingController extends Controller
             'code' => 'required|string|max:10|unique:classes,code',
             'department_id' => 'required|exists:departments,id',
             'description' => 'nullable|string|max:500',
-            'is_active' => 'boolean'
+            'is_active' => 'sometimes|boolean'
         ]);
+
+        // Set default value for is_active if not provided
+        $validated['is_active'] = $request->has('is_active') ? $request->is_active : true;
 
         SchoolClass::create($validated);
 
@@ -146,8 +155,11 @@ class SettingController extends Controller
             'code' => 'required|string|max:10|unique:classes,code,' . $class->id,
             'department_id' => 'required|exists:departments,id',
             'description' => 'nullable|string|max:500',
-            'is_active' => 'boolean'
+            'is_active' => 'sometimes|boolean'
         ]);
+
+        // Set default value for is_active if not provided
+        $validated['is_active'] = $request->has('is_active') ? $request->is_active : $class->is_active;
 
         $class->update($validated);
 
@@ -155,27 +167,30 @@ class SettingController extends Controller
                         ->with('success', 'Class updated successfully.');
     }
 
-     public function classYearManagement()
+    public function classYearManagement()
     {
-        $classYears = ClassYear::with(['class', 'academicYear'])->get();
+        $classYears = ClassYear::with(['class', 'academicYear', 'department'])->get();
         $classes = SchoolClass::where('is_active', true)->get();
         $academicYears = AcademicYear::where('is_active', true)->get();
 
         return view('settings.class-year-management', compact('classYears', 'classes', 'academicYears'));
     }
 
-   public function storeClassYear(Request $request)
+    public function storeClassYear(Request $request)
     {
         $validated = $request->validate([
             'class_id' => 'required|exists:classes,id',
             'year_id' => 'required|exists:academic_years,id',
             'semester' => 'required|in:first,second,summer',
-            'is_active' => 'boolean'
+            'is_active' => 'sometimes|boolean'
         ]);
 
         // Get the department_id from the selected class
         $class = SchoolClass::findOrFail($validated['class_id']);
         $validated['department_id'] = $class->department_id;
+
+        // Set default value for is_active if not provided
+        $validated['is_active'] = $request->has('is_active') ? $request->is_active : true;
 
         // Check if combination already exists
         $exists = ClassYear::where('class_id', $request->class_id)
@@ -200,12 +215,15 @@ class SettingController extends Controller
             'class_id' => 'required|exists:classes,id',
             'year_id' => 'required|exists:academic_years,id',
             'semester' => 'required|in:first,second,summer',
-            'is_active' => 'boolean'
+            'is_active' => 'sometimes|boolean'
         ]);
 
         // Get the department_id from the selected class
         $class = SchoolClass::findOrFail($validated['class_id']);
         $validated['department_id'] = $class->department_id;
+
+        // Set default value for is_active if not provided
+        $validated['is_active'] = $request->has('is_active') ? $request->is_active : $classYear->is_active;
 
         // Check if combination already exists (excluding current)
         $exists = ClassYear::where('class_id', $request->class_id)
@@ -223,5 +241,21 @@ class SettingController extends Controller
 
         return redirect()->route('settings.class-year-management')
                         ->with('success', 'Class year updated successfully.');
+    }
+
+    public function userManagement()
+    {
+        $users = User::with(['student', 'teacher'])->get();
+        return view('settings.user-management', compact('users'));
+    }
+
+    public function backup()
+    {
+        $backupFiles = [];
+        
+        // You would implement backup file listing logic here
+        // Example: list files from storage/app/backups directory
+        
+        return view('settings.backup', compact('backupFiles'));
     }
 }

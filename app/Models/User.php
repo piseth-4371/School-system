@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -16,7 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'profile_photo', 
+        'profile_photo',
         'last_login_at'
     ];
 
@@ -31,14 +32,30 @@ class User extends Authenticatable
         'last_login_at' => 'datetime'
     ];
 
-    // Add any relationships you need
+    // Relationships
     public function student()
     {
-        return $this->hasOne(Student::class);
+        return $this->hasOne(Student::class, 'user_id');
     }
 
     public function teacher()
     {
-        return $this->hasOne(Teacher::class);
+        return $this->hasOne(Teacher::class, 'user_id');
+    }
+
+    // Accessor for profile photo URL
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->profile_photo) {
+            return Storage::url('profile-photos/' . $this->profile_photo);
+        }
+        
+        return null;
+    }
+
+    // Check if user has profile photo
+    public function getHasProfilePhotoAttribute()
+    {
+        return !empty($this->profile_photo);
     }
 }

@@ -42,6 +42,21 @@
         .stat-card:hover {
             transform: translateY(-2px);
         }
+        .sidebar-collapse {
+            padding-left: 0.5rem;
+        }
+        .nav-item .dropdown-menu {
+            background-color: #34495e;
+            border: none;
+        }
+        .nav-item .dropdown-item {
+            color: #ecf0f1;
+            padding: 0.5rem 1rem;
+        }
+        .nav-item .dropdown-item:hover {
+            background-color: #2c3e50;
+            color: #3498db;
+        }
     </style>
 </head>
 <body>
@@ -112,11 +127,30 @@
                     </div>
                 </li>
 
-                <!-- Attendance -->
+                <!-- Attendance Dropdown -->
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('attendances*') ? 'active' : '' }}" href="{{ route('attendances.index') }}">
+                    <a class="nav-link " data-bs-toggle="collapse" href="#attendanceCollapse" role="button">
                         <i class="bi bi-calendar-check me-2"></i> Attendance
                     </a>
+                    <div class="collapse" id="attendanceCollapse">
+                        <ul class="nav flex-column ms-4">
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->is('attendance/students*') ? 'active' : '' }}" href="#">
+                                    <i class="bi bi-people-fill me-2"></i> Student Attendance
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->is('attendance/teachers*') ? 'active' : '' }}" href="{{ route('attendances.index') }}">
+                                    <i class="bi bi-person-badge-fill me-2"></i>  Attendance
+                                </a>
+                            </li> 
+                            <li class="nav-item">
+                                <a class="nav-link {{ request()->is('attendance/teachers*') ? 'active' : '' }}" href="{{ route('attendances.create') }}">
+                                    <i class="bi bi-person-badge-fill me-2"></i>  Record Attendance
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
 
                 <!-- Examinations -->
