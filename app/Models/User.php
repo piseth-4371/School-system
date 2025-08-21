@@ -44,14 +44,18 @@ class User extends Authenticatable
     }
 
     // Accessor for profile photo URL
-    public function getProfilePhotoUrlAttribute()
+   public function getProfilePhotoUrlAttribute()
     {
         if ($this->profile_photo) {
-            return Storage::url('profile-photos/' . $this->profile_photo);
+            // Check if file exists in storage
+            if (Storage::exists('public/profile-photos/' . $this->profile_photo)) {
+                return asset('storage/profile-photos/' . $this->profile_photo);
+            }
         }
         
-        return null;
-    }
+        // Return default avatar if no profile photo
+        return asset('images/default-avatar.png');
+}
 
     // Check if user has profile photo
     public function getHasProfilePhotoAttribute()

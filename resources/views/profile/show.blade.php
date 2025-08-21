@@ -25,12 +25,13 @@
             <div class="card">
                 <div class="card-body text-center">
                     <div class="mb-3">
-                        @if($user->profile_photo)
-                            <img src="{{ asset('storage/profile-photos/' . $user->profile_photo) }}" 
-                                 class="rounded-circle" width="150" height="150" style="object-fit: cover;">
+                       @if($user->profile_photo)
+                            <img src="{{ $user->profile_photo_url }}" 
+                                class="rounded-circle" width="150" height="150" style="object-fit: cover;"
+                                alt="{{ $user->name }}'s Profile Photo">
                         @else
                             <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center" 
-                                 style="width: 150px; height: 150px; font-size: 3rem;">
+                                style="width: 150px; height: 150px; font-size: 3rem;">
                                 <i class="bi bi-person"></i>
                             </div>
                         @endif

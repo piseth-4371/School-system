@@ -2,6 +2,7 @@
 
 @section('title', 'User Management')
 @section('content')
+
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">

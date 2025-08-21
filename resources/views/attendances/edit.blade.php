@@ -26,9 +26,15 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Teacher</label>
-                    <input type="text" class="form-control" 
-                           value="{{ $attendance->teacher->teacher_code }} — {{ $attendance->teacher->user->name ?? 'N/A' }}" 
-                           disabled>
+                    <select name="teacher_id" class="form-select @error('teacher_id') is-invalid @enderror" required>
+                        <option value="">-- Select Teacher --</option>
+                        @foreach ($teachers as $teacher)
+                            <option value="{{ $teacher->id }}" @selected(old('teacher_id', $attendance->teacher_id)==$teacher->id)>
+                                {{ $teacher->teacher_code }} — {{ $teacher->user->name ?? 'N/A' }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('teacher_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="col-md-3">

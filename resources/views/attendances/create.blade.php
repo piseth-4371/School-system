@@ -6,9 +6,9 @@
     <div class="row mb-4">
         <div class="col-12 d-flex justify-content-between align-items-center">
             <h1 class="h3 mb-0">Add Attendance</h1>
-            <!-- <a href="{{ route('attendances.index') }}" class="btn btn-outline-secondary">
+            <a href="{{ route('attendances.index') }}" class="btn btn-outline-secondary">
                 <i class="bi bi-arrow-left"></i> Back
-            </a> -->
+            </a>
         </div>
     </div>
 
@@ -24,7 +24,7 @@
                 @csrf
 
                 <div class="col-md-6">
-                    <label class="form-label">Teacher</label>
+                    <label class="form-label">Teacher *</label>
                     <select name="teacher_id" class="form-select @error('teacher_id') is-invalid @enderror" required>
                         <option value="">-- Select Teacher --</option>
                         @foreach ($teachers as $teacher)
@@ -37,14 +37,14 @@
                 </div>
 
                 <div class="col-md-3">
-                    <label class="form-label">Date</label>
+                    <label class="form-label">Date *</label>
                     <input type="date" name="date" value="{{ old('date', now()->toDateString()) }}"
                            class="form-control @error('date') is-invalid @enderror" required>
                     @error('date') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
                 <div class="col-md-3">
-                    <label class="form-label">Status</label>
+                    <label class="form-label">Status *</label>
                     <select name="status" class="form-select @error('status') is-invalid @enderror" required>
                         <option value="present" @selected(old('status')==='present')>Present</option>
                         <option value="absent"  @selected(old('status')==='absent')>Absent</option>

@@ -54,14 +54,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('attendances/by-class/{classYear}', [AttendanceController::class, 'byClass'])->name('attendances.byClass');
     Route::get('payments/by-student/{student}', [PaymentController::class, 'byStudent'])->name('payments.byStudent');
 
+    // Attendance Routes
+    Route::resource('attendances', AttendanceController::class);
+
     // Attendance Details Routes
-    Route::prefix('attendances')->name('attendances.')->group(function () {
-        Route::get('/{attendance}/details', [AttendanceController::class, 'showDetails'])->name('details.show');
-        Route::get('/{attendance}/details/create', [AttendanceController::class, 'createDetails'])->name('details.create');
-        Route::post('/{attendance}/details', [AttendanceController::class, 'storeDetails'])->name('details.store');
-        Route::get('/details/{attendanceDetail}/edit', [AttendanceController::class, 'editDetails'])->name('details.edit');
-        Route::put('/details/{attendanceDetail}', [AttendanceController::class, 'updateDetails'])->name('details.update');
+    Route::prefix('attendances')->group(function () {
+        Route::get('{attendance}/details', [AttendanceController::class, 'showDetails'])->name('attendances.details.show');
+        Route::get('{attendance}/details/create', [AttendanceController::class, 'createDetails'])->name('attendances.details.create');
+        Route::post('{attendance}/details', [AttendanceController::class, 'storeDetails'])->name('attendances.details.store');
+        Route::get('details/{detail}/edit', [AttendanceController::class, 'editDetail'])->name('attendances.details.edit');
+        Route::put('details/{detail}', [AttendanceController::class, 'updateDetail'])->name('attendances.details.update');
+        Route::delete('details/{detail}', [AttendanceController::class, 'destroyDetail'])->name('attendances.details.destroy');
     });
+    // Reports route (should already exist based on your previous setup)
+    Route::get('/reports/attendance', [ReportController::class, 'attendance'])->name('reports.attendance');
 
     // Reports Routes
     Route::prefix('reports')->name('reports.')->group(function () {

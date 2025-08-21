@@ -108,21 +108,26 @@ class ProfileController extends Controller
         }
     }
 
-   private function updateProfilePhoto($user, $photo)
+    private function updateProfilePhoto($user, $photo)
     {
         // Delete old profile photo if exists
         if ($user->profile_photo) {
-            Storage::delete('public/profile-photos/' . $user->profile_photo);
+            $oldPhotoPath = 'public/profile-photos/' . $user->profile_photo;
+            if (Storage::exists($oldPhotoPath)) {
+                Storage::delete($oldPhotoPath);
+            }
         }
 
         // Generate unique filename
         $filename = 'profile_' . $user->id . '_' . time() . '.' . $photo->getClientOriginalExtension();
         
-        // Store the file
+        // Store the file in the public disk
         $photo->storeAs('public/profile-photos', $filename);
 
         // Update user record
         $user->update(['profile_photo' => $filename]);
+        
+        return $filename;
     }
     
     private function updatePassword($user, $data)

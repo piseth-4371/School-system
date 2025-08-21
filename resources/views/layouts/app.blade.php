@@ -128,30 +128,33 @@
                 </li>
 
                 <!-- Attendance Dropdown -->
-                <li class="nav-item">
-                    <a class="nav-link " data-bs-toggle="collapse" href="#attendanceCollapse" role="button">
+                <!-- <li class="nav-item">
+                    <a class="nav-link" data-bs-toggle="collapse" href="#attendanceCollapse" role="button">
                         <i class="bi bi-calendar-check me-2"></i> Attendance
                     </a>
-                    <div class="collapse" id="attendanceCollapse">
+                    <div class="collapse show" id="attendanceCollapse">
                         <ul class="nav flex-column ms-4">
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->is('attendance/students*') ? 'active' : '' }}" href="#">
-                                    <i class="bi bi-people-fill me-2"></i> Student Attendance
+                                <a class="nav-link {{ request()->is('attendances') ? 'active' : '' }}" href="{{ route('attendances.index') }}">
+                                    <i class="bi bi-list-check me-2"></i> View Attendance
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link {{ request()->is('attendance/teachers*') ? 'active' : '' }}" href="{{ route('attendances.index') }}">
-                                    <i class="bi bi-person-badge-fill me-2"></i>  Attendance
-                                </a>
-                            </li> 
-                            <li class="nav-item">
-                                <a class="nav-link {{ request()->is('attendance/teachers*') ? 'active' : '' }}" href="{{ route('attendances.create') }}">
-                                    <i class="bi bi-person-badge-fill me-2"></i>  Record Attendance
+                                <a class="nav-link {{ request()->is('attendances/create') ? 'active' : '' }}" href="{{ route('attendances.create') }}">
+                                    <i class="bi bi-plus-circle me-2"></i> Record Attendance
                                 </a>
                             </li>
                         </ul>
                     </div>
+                </li> -->
+
+                 <!-- Finance -->
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('attendances*') ? 'active' : '' }}" href="{{ route('attendances.index') }}">
+                        <i class="bi bi-calendar-check me-2"></i> Attendance
+                    </a>
                 </li>
+
 
                 <!-- Examinations -->
                 <li class="nav-item">
